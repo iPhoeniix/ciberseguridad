@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guardianes Digitales: Simulador de Ciberseguridad</title>
+<!-- Tailwind CSS vía CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ===== Tokens de diseño ===== */
+  :root{--ink:#1b1f4b;--paper:#f4f6fb;--card:#fff;--line:#d9deee;--xp:#f5a400;--ok:#14935f;--mid:#b7791f;--bad:#d6393f;--link:#2f4bff}
+  body{background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+  h1,h2,h3,.display{font-family:Sora,system-ui,sans-serif;letter-spacing:-.01em}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .btn{border-radius:10px;padding:.65rem 1.1rem;font-weight:700;transition:transform .12s,background .12s}
+  .btn-main{background:var(--ink);color:#fff}.btn-main:hover{background:#2a3080}
+  .btn:active{transform:scale(.97)}
+  :focus-visible{outline:3px solid var(--link);outline-offset:2px}
+  .tab[aria-selected=true]{background:var(--ink);color:#fff}
+  .opt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:12px;padding:.85rem 1rem;background:#fff;transition:border-color .12s}
+  .opt:hover:not(:disabled){border-color:var(--link)}
+  .opt.good{border-color:var(--ok);background:#e9f8f1}.opt.mid{border-color:var(--mid);background:#fdf4e1}.opt.bad{border-color:var(--bad);background:#fdecec}
+  .badge-off{filter:grayscale(1);opacity:.35}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== Encabezado y navegación ===== -->
+<header class="sticky top-0 z-10 bg-white border-b" style="border-color:var(--line)">
+  <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3 justify-between">
+    <div class="display font-extrabold text-lg">🛡️ Guardianes Digitales</div>
+    <nav role="tablist" aria-label="Secciones" class="flex gap-1 overflow-x-auto text-sm font-semibold">
+      <button class="tab btn" role="tab" data-go="inicio">Inicio</button>
+      <button class="tab btn" role="tab" data-go="retos">Retos</button>
+      <button class="tab btn" role="tab" data-go="claves">Contraseñas</button>
+      <button class="tab btn" role="tab" data-go="panel">Mi panel</button>
+      <button class="tab btn" role="tab" data-go="fuentes">Fuentes</button>
+    </nav>
+    <div class="font-bold text-sm" aria-live="polite"><span style="color:var(--xp)">★</span> <span id="xpTop">0</span> XP</div>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 py-8">
+
+<!-- ===== INICIO: bienvenida e información ===== -->
+<section id="inicio" data-view>
+  <div class="card p-6 md:p-10 mb-6" style="background:var(--ink);color:#fff;border:0">
+    <h1 class="text-3xl md:text-5xl font-extrabold mb-3">Tus datos valen. Aprende a protegerlos.</h1>
+    <p class="max-w-2xl opacity-90 mb-6">Enfrenta casos reales que viven los jóvenes en internet, toma decisiones y descubre al instante qué riesgo tenían. Gana XP, desbloquea insignias y conviértete en Guardián Digital.</p>
+    <div class="flex flex-wrap gap-3">
+      <button class="btn" style="background:var(--xp);color:var(--ink)" data-go="retos">Empezar los retos</button>
+      <button class="btn border border-white/50" data-go="claves">Probar mi contraseña</button>
+    </div>
+  </div>
+
+  <!-- Video incrustado (YouTube Short, formato vertical 9:16) -->
+  <h2 class="text-2xl font-bold mb-3">Video: tu huella digital</h2>
+  <div class="card p-5 mb-6 grid md:grid-cols-[auto_1fr] gap-6 items-center">
+    <div class="mx-auto w-full" style="max-width:300px">
+      <div class="rounded-xl overflow-hidden" style="aspect-ratio:9/16;background:var(--ink)">
+        <iframe class="w-full h-full" src="https://www.youtube.com/embed/vu_kA-oKYCg" title="Cómo los ciberdelincuentes usan tu huella digital" loading="lazy" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+    </div>
+    <div>
+      <h3 class="text-xl font-bold mb-2">Cómo los ciberdelincuentes usan tu huella digital</h3>
+      <p class="text-sm mb-3">Mira el video antes de empezar los retos. Cada publicación, búsqueda y registro deja un rastro que otros pueden reunir y aprovechar. Después, pon a prueba lo aprendido en los casos prácticos.</p>
+      <div class="flex flex-wrap gap-3">
+        <button class="btn btn-main" data-go="retos">Ir a los retos</button>
+        <a class="btn border inline-block" style="border-color:var(--line)" href="https://www.youtube.com/shorts/vu_kA-oKYCg" target="_blank" rel="noopener noreferrer">Ver en YouTube</a>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="text-2xl font-bold mb-3">Marco legal: tus datos personales</h2>
+  <div class="card p-5 mb-6 space-y-3">
+    <p>En México, la protección de datos personales se rige por la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong> y su normativa. Durante años el <strong>INAI</strong> fue la autoridad que vigilaba su cumplimiento; en 2025 sus funciones pasaron a la <strong>Secretaría Anticorrupción y Buen Gobierno</strong>. Los principios y derechos siguen siendo la base para cuidarte.</p>
+    <div class="grid sm:grid-cols-2 gap-3 text-sm">
+      <div class="p-3 rounded-lg" style="background:var(--paper)"><strong>Derechos ARCO.</strong> Puedes solicitar <em>Acceso</em>, <em>Rectificación</em>, <em>Cancelación</em> y <em>Oposición</em> sobre tus datos.</div>
+      <div class="p-3 rounded-lg" style="background:var(--paper)"><strong>Aviso de privacidad.</strong> Quien recabe tus datos debe decirte qué recoge, para qué y con quién lo comparte.</div>
+      <div class="p-3 rounded-lg" style="background:var(--paper)"><strong>Datos sensibles.</strong> Salud, origen, creencias, orientación sexual o datos biométricos exigen consentimiento expreso.</div>
+      <div class="p-3 rounded-lg" style="background:var(--paper)"><strong>Consentimiento.</strong> Debe ser libre e informado. Si no estás seguro de para qué piden tus datos, no los des.</div>
+    </div>
+  </div>
+
+  <h2 class="text-2xl font-bold mb-3">Conceptos clave</h2>
+  <div class="grid md:grid-cols-3 gap-3 mb-6" id="concepts"></div>
+
+  <h2 class="text-2xl font-bold mb-3">Datos que conviene recordar</h2>
+  <div class="grid md:grid-cols-3 gap-3 mb-6">
+    <div class="card p-5"><div class="display text-3xl font-extrabold">≈ 68%</div><p class="text-sm mt-1">de las brechas de seguridad analizadas en el informe Verizon DBIR 2024 involucraron un factor humano (error, engaño o abuso de acceso). Cifra de referencia: verifica la edición más reciente.</p></div>
+    <div class="card p-5"><div class="display text-3xl font-extrabold">12+</div><p class="text-sm mt-1">caracteres: longitud mínima que usamos en este simulador. Con la longitud sube la seguridad más que con los símbolos raros.</p></div>
+    <div class="card p-5"><div class="display text-3xl font-extrabold">1 clic</div><p class="text-sm mt-1">es lo que suele necesitar el phishing. Verificar por otro canal antes de abrir un enlace es tu mejor defensa.</p></div>
+  </div>
+
+  <h2 class="text-2xl font-bold mb-3">Hábitos de un Guardián Digital</h2>
+  <ul class="card p-5 grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm list-disc pl-9">
+    <li>Activa la verificación en dos pasos en tus cuentas.</li>
+    <li>Usa un gestor de contraseñas y una clave distinta por cuenta.</li>
+    <li>Mantén perfiles privados y revisa quién te sigue.</li>
+    <li>Actualiza el sistema y las apps con regularidad.</li>
+    <li>Desconfía de la urgencia, los premios y las ofertas increíbles.</li>
+    <li>Si te acosan o extorsionan: guarda capturas, bloquea y avisa a un adulto o a tu escuela.</li>
+  </ul>
+</section>
+
+<!-- ===== RETOS: Módulo 1 ===== -->
+<section id="retos" data-view hidden>
+  <h2 class="text-2xl font-bold mb-1">Módulo 1: Simulador de decisiones</h2>
+  <p class="mb-5 text-sm">Lee cada caso y elige qué harías. Recibirás retroalimentación inmediata. Mejor decisión: 30 XP; decisión parcial: 10 XP.</p>
+  <div class="flex items-center gap-3 mb-4 text-sm font-semibold">
+    <div class="flex-1 h-2 rounded-full" style="background:var(--line)"><div id="caseBar" class="h-2 rounded-full" style="background:var(--ok);width:0"></div></div>
+    <span id="caseCount"></span>
+  </div>
+  <div id="caseBox" class="card p-5 md:p-7"></div>
+</section>
+
+<!-- ===== CONTRASEÑAS: Módulo 2 ===== -->
+<section id="claves" data-view hidden>
+  <h2 class="text-2xl font-bold mb-1">Módulo 2: Laboratorio de contraseñas</h2>
+  <p class="mb-5 text-sm">Evaluación basada en las guías NIST SP 800-63B: se premia la longitud y las frases de contraseña, y se penalizan los patrones predecibles. Lo que escribes <strong>no sale de tu navegador</strong>. Usa ejemplos, no tu clave real.</p>
+  <div class="card p-5 md:p-7">
+    <label for="pw" class="font-bold block mb-2">Escribe una contraseña de prueba</label>
+    <div class="flex gap-2">
+      <input id="pw" type="password" autocomplete="off" spellcheck="false" class="flex-1 border-2 rounded-lg px-3 py-3 text-lg" style="border-color:var(--line)" placeholder="Prueba una frase de 4 palabras…">
+      <button id="eye" class="btn border" style="border-color:var(--line)" aria-pressed="false">Mostrar</button>
+    </div>
+    <div class="mt-5" aria-live="polite">
+      <div class="flex justify-between text-sm font-bold mb-1"><span id="pwLabel">Sin evaluar</span><span id="pwScore">0/100</span></div>
+      <div class="h-4 rounded-full" style="background:var(--line)" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="pwProg"><div id="pwBar" class="h-4 rounded-full" style="width:0;transition:width .25s,background .25s"></div></div>
+    </div>
+    <ul id="pwChecks" class="mt-5 space-y-1 text-sm"></ul>
+    <div class="mt-5 p-4 rounded-lg text-sm" style="background:var(--paper)" id="pwTip">💡 Una frase como <em>"mi perro baila cumbia en mayo"</em> es larga, fácil de recordar y difícil de adivinar. Cambia palabras y haz la tuya.</div>
+    <button id="pwClaim" class="btn btn-main mt-5" disabled>Registrar logro (+40 XP)</button>
+  </div>
+</section>
+
+<!-- ===== PANEL: puntaje e insignias ===== -->
+<section id="panel" data-view hidden>
+  <h2 class="text-2xl font-bold mb-4">Mi panel de Guardián</h2>
+  <div class="card p-6 mb-5 text-center">
+    <div class="display text-5xl font-extrabold" id="xpBig">0</div>
+    <div class="font-semibold">XP acumulados</div>
+    <div class="display text-xl font-bold mt-2" id="rank"></div>
+    <div class="h-3 rounded-full mt-4 max-w-md mx-auto" style="background:var(--line)"><div id="rankBar" class="h-3 rounded-full" style="background:var(--xp);width:0;transition:width .3s"></div></div>
+    <p class="text-sm mt-2" id="rankNext"></p>
+  </div>
+  <h3 class="font-bold mb-2">Insignias</h3>
+  <div id="badges" class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-5"></div>
+  <div class="card p-5 mb-5"><h3 class="font-bold mb-1">Retroalimentación final</h3><p id="finalFb" class="text-sm"></p></div>
+  <p id="storeNote" class="text-sm mb-3"></p>
+  <button id="reset" class="btn border text-sm" style="border-color:var(--line)">Reiniciar progreso</button>
+</section>
+
+<!-- ===== FUENTES: bibliografía ===== -->
+<section id="fuentes" data-view hidden>
+  <h2 class="text-2xl font-bold mb-1">Bibliografía y fuentes</h2>
+  <p class="mb-5 text-sm">Referencias que sirvieron de base para los contenidos, criterios y diseño pedagógico de este software (formato APA simplificado). Consulta siempre la versión vigente en el sitio oficial.</p>
+  <h3 class="font-bold mb-2">Normativa y protección de datos</h3>
+  <ul class="card p-5 mb-5 space-y-3 text-sm list-disc pl-9">
+    <li>Constitución Política de los Estados Unidos Mexicanos. Artículos 6 y 16 (derecho a la protección de datos personales y derechos ARCO).</li>
+    <li>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP). Diario Oficial de la Federación. Texto vigente (reforma de 2025).</li>
+    <li>Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales [INAI]. (s. f.). Materiales de divulgación sobre protección de datos personales y prevención del robo de identidad. Sus funciones pasaron en 2025 a la Secretaría Anticorrupción y Buen Gobierno.</li>
+    <li>Ley General de Acceso de las Mujeres a una Vida Libre de Violencia y Código Penal Federal. Reformas conocidas como “Ley Olimpia” (2021), sobre violencia digital.</li>
+  </ul>
+  <h3 class="font-bold mb-2">Ciberseguridad y contraseñas</h3>
+  <ul class="card p-5 mb-5 space-y-3 text-sm list-disc pl-9">
+    <li>Grassi, P. A., et al. (2017). <em>Digital Identity Guidelines: Authentication and Lifecycle Management</em> (NIST Special Publication 800-63B). National Institute of Standards and Technology. Existe una revisión más reciente (800-63-4) en csrc.nist.gov.</li>
+    <li>Verizon. (2024). <em>2024 Data Breach Investigations Report</em>. Verizon Business.</li>
+    <li>Cybersecurity and Infrastructure Security Agency [CISA]. (s. f.). <em>Recognize and Report Phishing</em>. cisa.gov.</li>
+  </ul>
+  <h3 class="font-bold mb-2">Fundamentos pedagógicos</h3>
+  <ul class="card p-5 mb-5 space-y-3 text-sm list-disc pl-9">
+    <li>Vygotsky, L. S. (1978). <em>Mind in Society: The Development of Higher Psychological Processes</em>. Harvard University Press.</li>
+    <li>Piaget, J. (1970). <em>Science of Education and the Psychology of the Child</em>. Orion Press.</li>
+    <li>Kapp, K. M. (2012). <em>The Gamification of Learning and Instruction</em>. Pfeiffer.</li>
+  </ul>
+  <p class="text-xs opacity-80">Nota: las fuentes están citadas de forma general. Verifica títulos, años, versiones y enlaces en las páginas oficiales antes de incluirlas en trabajos formales.</p>
+</section>
+
+</main>
+<footer class="text-center text-xs py-8 opacity-70 px-4">Guardianes Digitales · 10 retos · Material educativo para nivel medio superior. Verifica siempre la normativa vigente en fuentes oficiales.</footer>
+
+<script>
+/* =========================================================
+   DATOS DEL CONTENIDO
+   ========================================================= */
+// Conceptos de la página principal
+const CONCEPTS = [
+  ["Phishing","Mensaje falso que imita a un banco, escuela o plataforma para que entregues datos o hagas clic en un enlace malicioso."],
+  ["Ingeniería social","Manipulación psicológica (urgencia, miedo, premios) para que tú mismo abras la puerta al atacante."],
+  ["Doxxing","Publicar o reunir datos personales de alguien (dirección, escuela, teléfono) para exponerlo o acosarlo."],
+  ["Grooming","Un adulto se hace pasar por menor o por alguien de confianza para ganarse a un adolescente con fines de abuso."],
+  ["Verificación en dos pasos","Segunda comprobación (app o código) además de la contraseña. Frena la mayoría de accesos no autorizados."],
+  ["Huella digital","Rastro de datos que dejas al publicar, buscar y navegar. Es difícil de borrar por completo."]
+];
+document.getElementById("concepts").innerHTML = CONCEPTS.map(c =>
+  `<div class="card p-4"><h3 class="font-bold">${c[0]}</h3><p class="text-sm mt-1">${c[1]}</p></div>`).join("");
+
+// Casos del Módulo 1. level: good (30 XP) | mid (10 XP) | bad (0 XP)
+const CASES = [
+  { id:"falso", title:"El perfil que pide “verificarte”", badge:"Detective de perfiles",
+    story:"Te escribe un perfil nuevo, con foto muy atractiva y pocos seguidores. Dice ser de una agencia de becas y te pide tu CURP, una foto de tu credencial escolar y tu dirección “para apartar tu lugar”.",
+    opts:[
+     {t:"Le mando todo: es una oportunidad y no quiero perderla.",l:"bad",f:"Riesgo alto. Con CURP, credencial y domicilio pueden suplantar tu identidad, abrir cuentas o extorsionarte. Los datos personales solo deben entregarse con un aviso de privacidad claro y un responsable identificable, y las instituciones reales no piden esto por mensaje directo."},
+     {t:"Le mando solo mi nombre y mi escuela para ver qué responde.",l:"mid",f:"Mejor, pero aún das información útil para armar un perfil tuyo. Dar “pequeñas piezas” permite al atacante armar el rompecabezas (ingeniería social). Lo correcto es no interactuar."},
+     {t:"No respondo, reviso la cuenta, la reporto y la bloqueo. Verifico la beca en el sitio oficial.",l:"good",f:"Excelente. Aplicaste el principio de minimización: no entregar datos sin necesidad ni identidad verificada. Reportar protege también a otros estudiantes."}]},
+  { id:"phishing", title:"“Tu cuenta será bloqueada hoy”", badge:"Caza-phishing",
+    story:"Te llega un SMS: “Banco: detectamos un cargo extraño. Si no confirmas tus datos en 30 minutos, tu cuenta será bloqueada: bit.ly/xxxx”. Tu mamá te prestó su tarjeta para una compra en línea.",
+    opts:[
+     {t:"Doy clic para revisar rápido; si es falso, cierro la página.",l:"bad",f:"Solo abrir el enlace puede instalar software malicioso o llevarte a una página clonada. Además, en muchos países capturar datos bancarios ajenos y usarlos sin permiso constituye un delito; tú podrías ser la víctima y exponer a tu familia."},
+     {t:"Reenvío el mensaje a mis amigos para preguntarles si les llegó.",l:"mid",f:"Buena intención, mala ruta: puedes propagar el enlace. Pregunta mostrando una captura, sin reenviar el enlace activo."},
+     {t:"No abro el enlace. Llamo al número que está detrás de la tarjeta o uso la app oficial, y aviso a mi familia.",l:"good",f:"Correcto. Los bancos no piden datos por SMS con enlaces acortados. Las señales: urgencia, enlace acortado y remitente no verificable. Verificar por un canal oficial es la mejor defensa."}]},
+  { id:"ubicacion", title:"Tu rutina, a la vista de todos", badge:"Escudo de ubicación",
+    story:"Subes historias con uniforme, ubicación en tiempo real afuera de tu escuela y fotos de tu casa con la fachada visible. Tu cuenta es pública y tienes más de 1,000 seguidores que no conoces.",
+    opts:[
+     {t:"Todo sigue igual: así consigo más seguidores.",l:"bad",f:"Riesgo alto. Rutina + ubicación + escuela + domicilio facilitan acoso, robo y secuestro virtual o extorsión. La ubicación y las imágenes que te identifican son datos personales; publicarlos con acceso abierto te deja sin control."},
+     {t:"Quito la ubicación en tiempo real, pero dejo la cuenta pública.",l:"mid",f:"Un buen primer paso. Falta limitar quién ve tu contenido y evitar uniforme, fachada y horarios habituales."},
+     {t:"Cuenta privada, “mejores amigos” para lo personal, publico con retraso y sin ubicación exacta ni uniforme.",l:"good",f:"Excelente. Reducir la superficie de exposición es la mejor práctica: tú decides quién ve tus datos y cuándo."}]},
+  { id:"wifi", title:"Wi-Fi gratis en la plaza", badge:"Navegante seguro",
+    story:"Hay una red “Plaza_Gratis_WiFi” sin contraseña. Necesitas entrar a tu cuenta del banco y a tu correo escolar para subir una tarea urgente.",
+    opts:[
+     {t:"Me conecto y entro a todo: es solo un momento.",l:"bad",f:"Las redes abiertas pueden ser falsas o estar monitoreadas. Podrían capturar tus credenciales o datos de sesión."},
+     {t:"Me conecto, pero solo entro al correo escolar, no al banco.",l:"mid",f:"Reduces el daño, pero tu correo suele permitir restablecer otras cuentas. Mejor evita cuentas sensibles en redes abiertas."},
+     {t:"Uso mis datos móviles (o comparto internet de mi teléfono) y tengo verificación en dos pasos activada.",l:"good",f:"Correcto. Tu red móvil es mucho más difícil de interceptar y la verificación en dos pasos protege la cuenta aunque se filtre la contraseña."}]}
+  ,{ id:"sexting", title:"Una foto íntima “de confianza”", badge:"Consentimiento",
+    story:"Tu pareja te pide una foto íntima y promete que “nadie la verá”. Días después, un compañero te muestra una captura de un chat donde otra persona compartió una imagen así de alguien de tu escuela.",
+    opts:[
+     {t:"La envío: confío en mi pareja y las fotos se borran solas.",l:"bad",f:"Una vez enviada, pierdes el control: las capturas existen y las relaciones cambian. Difundir contenido íntimo sin consentimiento es violencia digital sancionada en México (Ley Olimpia), pero la prevención empieza por no entregar ese material."},
+     {t:"Reenvío la captura al grupo para que todos sepan quién fue.",l:"mid",f:"Difundir la imagen agrava el daño a la víctima y puede hacerte corresponsable. Si es una persona menor de edad, además es un delito grave. Guarda evidencia y repórtalo, no lo compartas."},
+     {t:"Me niego a enviarla, no reenvío nada, guardo evidencia y aviso a un adulto o a la escuela para apoyar a la víctima.",l:"good",f:"Excelente. Tu cuerpo, tus reglas: el consentimiento puede retirarse. Cortar la cadena de difusión y buscar apoyo protege a la persona afectada."}]},
+  { id:"acoso", title:"El grupo que se burla de alguien", badge:"Alto al ciberacoso",
+    story:"En un chat de grupo comparten un meme humillante de una compañera y todos ríen. Te piden que lo reenvíes a otros grupos y que “le des like” para que se vuelva viral.",
+    opts:[
+     {t:"Lo reenvío: es solo una broma y todos lo hacen.",l:"bad",f:"Es ciberacoso. Compartir imágenes o datos para humillar daña la dignidad y puede traer sanciones escolares, y hasta legales según el caso. Participar en grupo no te quita responsabilidad."},
+     {t:"No lo reenvío, pero tampoco digo nada para no meterme en problemas.",l:"mid",f:"No difundir ya ayuda, pero el silencio de los testigos sostiene el acoso. Hay formas seguras de actuar sin confrontar."},
+     {t:"No lo reenvío, salgo del grupo si sigue, guardo capturas, apoyo a la compañera y lo reporto a la escuela o a la plataforma.",l:"good",f:"Excelente. Los testigos activos reducen el acoso. Documentar y reportar permite que las autoridades escolares y la plataforma intervengan."}]},
+  { id:"codigo", title:"“Soporte” te pide un código", badge:"Código secreto",
+    story:"Recibes una llamada: “Somos de soporte de tu red social, alguien intentó entrar a tu cuenta. Te llegó un código por SMS; dínoslo para cancelarlo”. En ese momento sí te llegó un código.",
+    opts:[
+     {t:"Se lo digo: llegó justo cuando dijeron y suena oficial.",l:"bad",f:"Ese código es la llave de tu cuenta: el atacante intentaba entrar y necesita que tú se lo des. Ninguna plataforma legítima pide códigos por llamada o mensaje."},
+     {t:"Les pido su nombre y número de empleado, y luego decido.",l:"mid",f:"Pedir datos es buen instinto, pero cualquier estafador inventa nombres y números. La respuesta segura es no dar el código y colgar."},
+     {t:"Cuelgo, no comparto el código, cambio mi contraseña desde la app oficial y activo la verificación en dos pasos con app autenticadora.",l:"good",f:"Correcto. Los códigos de un solo uso nunca se comparten. Un intento de acceso que no iniciaste es señal para cambiar tu clave."}]},
+  { id:"juegos", title:"Mod gratis para tu videojuego", badge:"Gamer seguro",
+    story:"En un chat de tu juego favorito alguien ofrece un “mod” que da monedas ilimitadas. Debes descargar un archivo .exe desde un enlace y desactivar el antivirus “porque lo detecta como falso positivo”.",
+    opts:[
+     {t:"Lo descargo y desactivo el antivirus: quiero las monedas.",l:"bad",f:"Es una táctica clásica para instalar malware (robo de cuentas y contraseñas, o cifrado de archivos). Desactivar la protección es justo lo que busca el atacante."},
+     {t:"Lo descargo, pero lo abro en la computadora de la escuela o de un amigo.",l:"mid",f:"Pones en riesgo a otras personas y sus datos. La respuesta segura es no ejecutarlo."},
+     {t:"No lo descargo. Uso solo la tienda oficial del juego, reporto el mensaje y activo la verificación en dos pasos.",l:"good",f:"Excelente. Las fuentes oficiales y mantener el antivirus activo reducen mucho el riesgo. Reportar protege a otros jugadores."}]},
+  { id:"filtracion", title:"Alerta: tu contraseña se filtró", badge:"Clave única",
+    story:"Recibes un aviso de que tu correo aparece en una filtración de datos de un sitio donde te registraste hace años. Usas esa misma contraseña en tu correo, redes y plataforma escolar.",
+    opts:[
+     {t:"Lo ignoro: ese sitio ya ni lo uso.",l:"bad",f:"Los atacantes prueban contraseñas filtradas en otros servicios (credential stuffing). Si repites tu clave, una filtración abre todas tus cuentas."},
+     {t:"Cambio solo la contraseña del sitio filtrado.",l:"mid",f:"Es necesario, pero no suficiente: si la reutilizas en otras cuentas, también debes cambiarla ahí."},
+     {t:"Cambio la contraseña en todas las cuentas donde la usé, uso claves únicas con un gestor y activo la verificación en dos pasos.",l:"good",f:"Excelente. Una clave distinta por cuenta limita el daño de cualquier filtración. Las guías del NIST recomiendan revisar contraseñas contra listas de claves comprometidas."}]},
+  { id:"extorsion", title:"“Pago o difundo tus fotos”", badge:"Sin miedo",
+    story:"Un desconocido te escribe: dice tener fotos tuyas (quizá editadas con IA) y te exige dinero en 24 horas o las enviará a tus contactos y a tu escuela.",
+    opts:[
+     {t:"Pago de inmediato para que no las publique.",l:"bad",f:"Pagar casi nunca detiene la extorsión: suelen pedir más. Además refuerza el negocio del delito. Mantén la calma: el miedo es su herramienta."},
+     {t:"Respondo para intentar negociar o convencerlo de que borre todo.",l:"mid",f:"Interactuar le da información y más control. Lo recomendable es cortar la comunicación."},
+     {t:"No pago ni respondo; guardo capturas, bloqueo, cuento todo a un adulto de confianza y denuncio ante las autoridades (por ejemplo, la policía cibernética de tu estado).",l:"good",f:"Excelente. Documentar, bloquear y pedir ayuda es lo correcto. Tú eres la víctima, y las imágenes manipuladas pueden constituir un delito."}]}
+];
+
+// Insignias
+const BADGES = [
+  { id:"b1", icon:"🚀", name:"Primer paso", desc:"Resuelve tu primer reto", ok:s => Object.keys(s.cases).length >= 1 },
+  { id:"b2", icon:"🕵️", name:"Detective de perfiles", desc:"Mejor decisión en el caso del perfil falso", ok:s => s.cases.falso === "good" },
+  { id:"b3", icon:"🎣", name:"Caza-phishing", desc:"Mejor decisión en el caso del SMS", ok:s => s.cases.phishing === "good" },
+  { id:"b4", icon:"📍", name:"Escudo de ubicación", desc:"Mejor decisión en el caso de redes sociales", ok:s => s.cases.ubicacion === "good" },
+  { id:"b5", icon:"🔐", name:"Maestro de contraseñas", desc:"Logra una contraseña fuerte", ok:s => s.pw },
+  { id:"b6", icon:"🛡️", name:"Guardián Digital", desc:"Completa los 10 retos y supera 250 XP", ok:s => Object.keys(s.cases).length === CASES.length && s.pw && s.xp >= 250 }
+];
+const RANKS = [[0,"Aprendiz"],[80,"Explorador"],[160,"Defensor"],[250,"Guardián Digital"]];
+
+/* =========================================================
+   ESTADO (con guardado local opcional)
+   ========================================================= */
+let S = { xp:0, cases:{}, pw:false, idx:0 };
+const KEY = "guardianes_digitales_v2";
+let storageOK = true; // si localStorage está bloqueado, la app sigue funcionando en memoria
+try {
+  const g = JSON.parse(localStorage.getItem(KEY));
+  if (g && typeof g.xp === "number" && g.cases && typeof g.cases === "object") S = Object.assign(S, g);
+} catch(e) { storageOK = false; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) { storageOK = false; } };
+S.idx = Math.max(0, Math.min(S.idx || 0, CASES.length)); // evita índices inválidos
+const $ = id => document.getElementById(id);
+const PTS = { good:30, mid:10, bad:0 };
+
+/* =========================================================
+   NAVEGACIÓN
+   ========================================================= */
+function go(view){
+  document.querySelectorAll("[data-view]").forEach(v => v.hidden = v.id !== view);
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.go === view));
+  if (view === "panel") renderPanel();
+  if (view === "retos") renderCase();
+  window.scrollTo({top:0});
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+
+/* =========================================================
+   MÓDULO 1: SIMULADOR DE DECISIONES
+   ========================================================= */
+function renderCase(){
+  const box = $("caseBox");
+  const done = Object.keys(S.cases).length;
+  $("caseBar").style.width = (done / CASES.length * 100) + "%";
+  $("caseCount").textContent = `${done}/${CASES.length} casos`;
+  if (S.idx >= CASES.length){
+    box.innerHTML = `<h3 class="text-xl font-bold mb-2">¡Completaste los retos!</h3><p class="mb-4">Revisa tu panel para ver tus insignias y la retroalimentación final.</p><button class="btn btn-main" data-go="panel">Ver mi panel</button>`;
+    return;
+  }
+  const c = CASES[S.idx], answered = S.cases[c.id];
+  box.innerHTML = `
+    <p class="text-sm font-semibold mb-1">Caso ${S.idx+1} de ${CASES.length}</p>
+    <h3 class="text-xl font-bold mb-2">${c.title}</h3>
+    <p class="mb-4">${c.story}</p>
+    <div class="space-y-2" id="opts">${c.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o.t}</button>`).join("")}</div>
+    <div id="fb" class="mt-4" aria-live="polite"></div>`;
+  $("opts").onclick = e => { const b = e.target.closest(".opt"); if (b) choose(+b.dataset.i); };
+  if (answered) choose(null); // si ya respondió, no se vuelve a puntuar
+}
+function choose(i){
+  const c = CASES[S.idx];
+  const first = !(c.id in S.cases);
+  const picked = i === null ? null : c.opts[i];
+  if (first && picked){ S.cases[c.id] = picked.l; S.xp += PTS[picked.l]; save(); updateXP(); }
+  // Marca todas las opciones: color por nivel; la elegida con borde grueso
+  document.querySelectorAll(".opt").forEach((b,k) => { b.disabled = true; b.classList.add(c.opts[k].l); });
+  const o = picked || c.opts.find(x => x.l === S.cases[c.id]);
+  const msg = { good:"✅ Gran decisión (+30 XP)", mid:"⚠️ Decisión parcial (+10 XP)", bad:"❌ Decisión riesgosa (+0 XP)" }[o.l];
+  $("fb").innerHTML = `<div class="p-4 rounded-lg" style="background:var(--paper)"><p class="font-bold mb-1">${msg}</p><p class="text-sm">${o.f}</p>
+    <button class="btn btn-main mt-3" id="next">${S.idx+1 < CASES.length ? "Siguiente caso" : "Terminar"}</button></div>`;
+  $("next").onclick = () => { S.idx++; save(); renderCase(); };
+  $("next").focus();
+}
+
+/* =========================================================
+   MÓDULO 2: EVALUADOR DE CONTRASEÑAS (criterios tipo NIST)
+   ========================================================= */
+const COMMON = ["password","contraseña","contrasena","123456","12345678","qwerty","admin","iloveyou","letmein","abc123","111111","dragon","futbol","mexico","bienvenido","teamo","princesa"];
+function hasSequence(p){
+  const s = p.toLowerCase(), seqs = ["abcdefghijklmnopqrstuvwxyz","0123456789","qwertyuiop","asdfghjkl","zxcvbnm"];
+  for (const q of seqs) for (let i=0;i<=q.length-4;i++){ const part=q.slice(i,i+4); if (s.includes(part) || s.includes([...part].reverse().join(""))) return true; }
+  return false;
+}
+function evaluate(p){
+  const words = p.trim().split(/[\s\-_.]+/).filter(w => w.length >= 3);
+  const lower = p.toLowerCase();
+  const checks = [
+    { ok:p.length >= 12, txt:"Tiene al menos 12 caracteres" },
+    { ok:p.length >= 16 || words.length >= 3 && p.length >= 12, txt:"Es una frase de contraseña (3+ palabras o 16+ caracteres)" },
+    { ok:!COMMON.some(c => lower.includes(c)), txt:"No contiene contraseñas muy comunes" },
+    { ok:!hasSequence(p) && !/(.)\1{2,}/.test(p) && !/(19|20)\d{2}/.test(p), txt:"Sin secuencias (abcd, 1234), repeticiones (aaa) ni años" }
+  ];
+  let score = Math.min(p.length, 20) / 20 * 50;           // longitud: hasta 50
+  if (checks[1].ok) score += 20;                           // frase de contraseña
+  if (checks[2].ok) score += 15; else score = Math.min(score, 10); // comunes: tope bajo
+  if (checks[3].ok) score += 15; else score -= 15;         // patrones predecibles
+  if (!p) score = 0;
+  return { score: Math.max(0, Math.min(100, Math.round(score))), checks };
+}
+function renderPw(){
+  const p = $("pw").value, r = evaluate(p);
+  const lvl = !p ? ["Sin evaluar","#d9deee"] : r.score < 40 ? ["Débil","var(--bad)"] : r.score < 80 ? ["Aceptable","var(--mid)"] : ["Fuerte","var(--ok)"];
+  $("pwLabel").textContent = lvl[0]; $("pwScore").textContent = r.score + "/100";
+  $("pwBar").style.width = r.score + "%"; $("pwBar").style.background = lvl[1];
+  $("pwProg").setAttribute("aria-valuenow", r.score);
+  $("pwChecks").innerHTML = p ? r.checks.map(c => `<li>${c.ok ? "✅" : "⬜"} ${c.txt}</li>`).join("") : "";
+  const tips = ["Alarga tu contraseña: cada palabra extra multiplica el esfuerzo del atacante.","Evita tu nombre, fecha de nacimiento, equipo favorito o mascota: son lo primero que se prueba.","Una clave distinta por cada cuenta. Si se filtra una, las demás siguen a salvo.","Activa la verificación en dos pasos y considera un gestor de contraseñas."];
+  if (p) $("pwTip").innerHTML = "💡 " + (r.score >= 80 ? "¡Muy bien! Recuerda usar una clave distinta en cada cuenta y activar la verificación en dos pasos." : tips[r.checks.findIndex(c => !c.ok) % tips.length]);
+  $("pwClaim").disabled = !(r.score >= 80) || S.pw;
+  $("pwClaim").textContent = S.pw ? "Logro registrado ✔" : "Registrar logro (+40 XP)";
+}
+$("pw").addEventListener("input", renderPw);
+$("eye").onclick = () => { const h = $("pw").type === "password"; $("pw").type = h ? "text" : "password"; $("eye").textContent = h ? "Ocultar" : "Mostrar"; $("eye").setAttribute("aria-pressed", h); };
+$("pwClaim").onclick = () => { if (!S.pw){ S.pw = true; S.xp += 40; save(); updateXP(); renderPw(); } };
+
+/* =========================================================
+   PANEL: XP, RANGO, INSIGNIAS Y RETROALIMENTACIÓN
+   ========================================================= */
+function updateXP(){ $("xpTop").textContent = S.xp; }
+function renderPanel(){
+  $("xpBig").textContent = S.xp;
+  let r = RANKS[0], next = null;
+  RANKS.forEach((x,i) => { if (S.xp >= x[0]){ r = x; next = RANKS[i+1] || null; } });
+  $("rank").textContent = "Rango: " + r[1];
+  $("rankBar").style.width = (next ? (S.xp - r[0]) / (next[0] - r[0]) * 100 : 100) + "%";
+  $("rankNext").textContent = next ? `Te faltan ${next[0]-S.xp} XP para ser ${next[1]}.` : "¡Alcanzaste el máximo rango!";
+  $("badges").innerHTML = BADGES.map(b => {
+    const on = b.ok(S);
+    return `<div class="card p-4 text-center ${on?"":"badge-off"}"><div class="text-4xl" aria-hidden="true">${b.icon}</div><div class="font-bold text-sm">${b.name}</div><div class="text-xs">${b.desc}</div><span class="sr-only">${on?"Obtenida":"Bloqueada"}</span></div>`;
+  }).join("");
+  // Retroalimentación final según desempeño
+  const n = Object.keys(S.cases).length, goods = Object.values(S.cases).filter(v => v === "good").length;
+  let fb;
+  if (n === 0 && !S.pw) fb = "Aún no has empezado. Comienza con los retos: cada decisión te enseña algo nuevo.";
+  else {
+    fb = `Resolviste ${n} de ${CASES.length} casos y tomaste ${goods} decisiones ideales. `;
+    const weak = CASES.filter(c => S.cases[c.id] && S.cases[c.id] !== "good").map(c => c.title);
+    if (weak.length) fb += `Repasa: ${weak.join("; ")}. `;
+    if (n < CASES.length) fb += "Te faltan casos por resolver. ";
+    fb += S.pw ? "Ya sabes construir una contraseña sólida." : "Pasa por el laboratorio de contraseñas para completar tu entrenamiento.";
+  }
+  $("finalFb").textContent = fb;
+  $("storeNote").textContent = storageOK ? "💾 Tu progreso se guarda automáticamente en este navegador (localStorage)." : "⚠️ Tu navegador bloquea el almacenamiento local: el progreso se perderá al cerrar la página.";
+}
+$("reset").onclick = () => { if (confirm("¿Seguro que quieres reiniciar tu progreso?")){ S = {xp:0,cases:{},pw:false,idx:0}; save(); updateXP(); renderPanel(); } };
+
+/* ===== Arranque ===== */
+updateXP(); renderPw(); go("inicio");
+</script>
+</body>
+</html>
